@@ -43,13 +43,16 @@ public class Floaty : MonoBehaviour
     }
 
     // Update is called once per frame
-    void Update()
+    void FixedUpdate()
     {
         //Debug.Log(host);
         Vector3 pos = topTransform.position;
         //clampedX = pos.x > screenEdges ? screenEdges : pos.x < -1  * screenEdges ? -1 * screenEdges : pos.x;
         clampedY = pos.y + displace > screenTop - height ? screenTop - height : pos.y + displace;
         this.transform.position = new Vector3(pos.x, clampedY, pos.z);
-
+        if(!host.activeInHierarchy)
+        {
+            Destroy(gameObject);
+        }
     }
 }

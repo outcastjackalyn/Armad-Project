@@ -40,11 +40,12 @@ public class Player : MonoBehaviour
     [SerializeField] private bool jump = false;
     [SerializeField] private bool canShoot = false;
     [SerializeField] private bool reloading = false;
-    private bool roll = false;
+    [SerializeField] private bool roll = false;
+    [SerializeField] private bool dash = false;
     private float maxSpeed = 15;
     [SerializeField] public Transform gunPoint;
     [SerializeField] private GameObject projectile;
-    private Quaternion scatterAngle = Quaternion.Euler(0,0,-5);
+    private Quaternion scatterAngle;
     public GameObject slick;
     private GameObject gameData;
 
@@ -95,13 +96,20 @@ public class Player : MonoBehaviour
        /* Debug.Log("controller for: " + controller);
         Debug.Log("Character is: " + character);
         Debug.Log("anim for: " + this.animator);*/
-        if(reloading || roll)
+        if(reloading || controller.isRolling)
         {
             canShoot = false;
         }
         else
         {
             canShoot = true;
+        }
+        if (character.GetComponent<Rigidbody2D>().velocity.magnitude < 0.2f)
+        {
+            if (roll && !dash)
+            {
+                roll = false;
+            }
         }
         if (gameData.GetComponent<GameManagement>().gameState == GameState.PLAY)
         {
@@ -129,13 +137,6 @@ public class Player : MonoBehaviour
         }
     }
 
-
-
-
-
-
-
-
     void Inputs()
     {
         speed = Input.GetAxisRaw(axes.movement) * maxSpeed;
@@ -149,14 +150,16 @@ public class Player : MonoBehaviour
         {
             this.animator.SetBool("jumping", false);
         }
-        if (controller.land)
+        if (controller.grounded)
         {
             if (Input.GetButtonDown(axes.roll))
             {
-                roll = !roll;
+                if(!roll)
+                {
+                    StartCoroutine(Dash());
+                }
             }
         }
-
         if (Input.GetButtonDown(axes.shoot))
         {
             if (canShoot)
@@ -172,15 +175,33 @@ public class Player : MonoBehaviour
     {
 
         //Debug.Log("controller for: " + controller.transform.name);
-        controller.Move(speed * Time.fixedDeltaTime, roll, jump);
+        controller.Move(speed * Time.fixedDeltaTime, roll, jump, dash);
         if (jump)
         {
             jump = false;
         }
     }
 
+
+
+    IEnumerator Dash()
+    {
+        if (reloading)
+        {
+            reloading = false;
+        }
+        dash = true;
+        yield return new WaitForSeconds(0.1f);
+        roll = true;
+        dash = false;
+        yield return true;
+    }
+
+
+
     IEnumerator Shoot()
     {
+        scatterAngle = Quaternion.Euler(0, 0, -Mathf.FloorToInt(Random.Range(2.1f, 5.9f)));
         reloading = true;
        /* Debug.Log("Shoot id: " + this.id);
         Debug.Log("Shoot origin: " + this.character);
@@ -190,15 +211,16 @@ public class Player : MonoBehaviour
         Quaternion rotation;
         rotation = this.gunPoint.rotation * scatterAngle;
         Instantiate(projectile, this.gunPoint.position, rotation);
-        yield return new WaitForSeconds(0.12f);
+        yield return new WaitForSeconds(0.1f);
         Instantiate(projectile, this.gunPoint.position, this.gunPoint.rotation);
-        yield return new WaitForSeconds(0.12f);
+        yield return new WaitForSeconds(0.1f);
+        scatterAngle = Quaternion.Euler(0, 0, -Mathf.FloorToInt(Random.Range(2.1f, 5.9f)));
         Quaternion inv = Quaternion.Inverse(scatterAngle);
         rotation = this.gunPoint.rotation * inv;
         Instantiate(projectile, this.gunPoint.position, rotation);
 
         yield return new WaitForSeconds(0.5f);
         //set can shoot back to true
-        reloading = false;
+        //reloading = false;
     }
 }

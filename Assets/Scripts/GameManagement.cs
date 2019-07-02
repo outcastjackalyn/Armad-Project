@@ -155,7 +155,7 @@ public class GameManagement : MonoBehaviour
 
     void loadMap()
     {
-        mapID = pickMap();
+        mapID = pickMap(SceneManager.GetActiveScene().buildIndex);
         SceneManager.LoadScene(mapID);
         gameState = GameState.MAPSTART;
         countdown = 2.9999f;
@@ -198,10 +198,33 @@ public class GameManagement : MonoBehaviour
     }
 
 
-    int pickMap()
+    int pickMap(int currentMap)
     {
+        int total = SceneManager.sceneCountInBuildSettings;
+        Debug.Log(currentMap);
         //randomly select a new map
-        return 2;
+        int i = Random.Range(2, total);
+        if (currentMap < 2)
+        {
+            return i;
+        }
+        else
+        {
+            if(i == currentMap)
+            {
+                i++;
+                if (i >= total)
+                {
+                    i = 2;
+                }
+                return i;
+            }
+            else
+            {
+                return i;
+            }
+        }
+
     }
 
     bool readyCheck()

@@ -11,9 +11,9 @@ GameObject:
   - component: {fileID: 6539046687323766072}
   - component: {fileID: 6539046687323766073}
   - component: {fileID: 6770787347230367793}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Barrel
-  m_TagString: Destructible
+  m_TagString: Platform
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 5139096770747555129}
   - component: {fileID: 7601001828022234243}
   - component: {fileID: 4768585491047468116}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: BigRock
   m_TagString: Platform
   m_Icon: {fileID: 0}
